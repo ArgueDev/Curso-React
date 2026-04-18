@@ -1,32 +1,44 @@
 import { create } from 'zustand';
-import axios from 'axios';
-import { CryptoCurrencySchema } from './schemas/crypto-schema';
-import type { CryptoCurrency } from './types';
+import type { CryptoCurrency, CryptoPrice, Pair } from './types';
 import { devtools } from "zustand/middleware";
+import { fetchCryptoPrice, getCrypto } from './services/CryptoService';
 
 type CryptoStore = {
-    crypto: CryptoCurrency[],
+    crypto: CryptoCurrency[]
+    result: CryptoPrice
+    loading: boolean
     fetchCrypto: () => Promise<void>
-}
-
-async function getCrypto() {
-    const url = 'https://data-api.coindesk.com/asset/v1/top/list?page=1&page_size=10';
-    const {data: {Data: {LIST}}} = await axios(url);
-    
-    const result = CryptoCurrencySchema.safeParse(LIST);
-    
-    if (result.success) {
-        return result.data;
-    }
-    
+    fetchData: (pair: Pair) => Promise<void>
 }
 
 export const useCryptoStore = create<CryptoStore>()(devtools((set) => ({
     crypto: [],
+    result: {
+        IMAGEURL: '',
+        PRICE: '',
+        HIGHDAY: '',
+        LOWDAY: '',
+        CHANGEPCT24HOUR: '',
+        LASTUPDATE: ''
+    },
+    loading: false,
+
     fetchCrypto: async () => {
         const crypto = await getCrypto();
         set(() => ({
             crypto
+        }))
+    },
+
+    fetchData: async (pair) => {
+        set(() => ({
+            loading: true
+        }))
+
+        const result = await fetchCryptoPrice(pair);
+        set(() => ({
+            result,
+            loading: false
         }))
     }
 })))

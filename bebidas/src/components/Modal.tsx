@@ -7,6 +7,7 @@ export default function Modal() {
 
     const modal = useAppStore((state) => state.modal)
     const closeModal = useAppStore((state) => state.closeModal)
+    const selectedReceta = useAppStore((state) => state.selectedReceta)
 
     return (
         <>
@@ -37,7 +38,7 @@ export default function Modal() {
                             >
                                 <DialogPanel className="relative transform overflow-hidden rounded-lg bg-white px-4 pt-5 pb-4 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-2xl sm:p-6" >
                                     <DialogTitle as="h3" className="text-gray-900 text-4xl font-extrabold my-5 text-center">
-                                        Titulo Aquí
+                                        {selectedReceta?.strDring}
                                     </DialogTitle>
                                     <DialogTitle as="h3" className="text-gray-900 text-2xl font-extrabold my-5">
                                         Ingredientes y Cantidades
